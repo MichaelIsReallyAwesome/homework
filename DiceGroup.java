@@ -97,7 +97,7 @@ public class DiceGroup {
 	 */
 	public void printDiceLine(int value) {
 		//System.out.print(line[getDiceLine(value)]);
-		System.out.print(value);
+		System.out.print(line[value]);
 	}
 	
 	/**
