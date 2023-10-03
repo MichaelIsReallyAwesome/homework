@@ -96,7 +96,8 @@ public class DiceGroup {
 	 *  @param value The index into the ASCII image of the dice.
 	 */
 	public void printDiceLine(int value) {
-		System.out.print(line[getDiceLine(value)]);
+		//System.out.print(line[getDiceLine(value)]);
+		System.out.print(value);
 	}
 	
 	/**
