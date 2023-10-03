@@ -44,8 +44,8 @@ public class Yahtzee {
 		printHeader();
 		
 		//asks user for player names
-		player1=Prompt.getString(player1 + ", please enter your first name");
-		player2=Prompt.getString("\n" + player2 + ", please enter your first name");
+		player1=Prompt.getString("Player 1, please enter your first name");
+		player2=Prompt.getString("Player 2, please enter your first name");
 		
 		//plays game
 		Prompt.getString("\nLet's see who will go first. One, please hit enter to roll the dice :");
