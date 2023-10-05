@@ -37,29 +37,45 @@ public class Yahtzee {
 	 */
 	public void run() {
 		DiceGroup dg=new DiceGroup(); //class containing all of the dicegroup methods
-		String player1="";
-		String player2="";
+		String p1Name = "";
+		String p2Name = "";
 		
 		//prints the header
 		printHeader();
 		
 		//asks user for player names
-		player1=Prompt.getString("Player 1, please enter your first name");
-		player2=Prompt.getString("Player 2, please enter your first name");
+		p1Name = Prompt.getString("Player 1, please enter your first name");
+		p2Name = Prompt.getString("\nPlayer 2, please enter your first name");
 		
-		//plays game
-		Prompt.getString("\nLet's see who will go first. One, please hit enter to roll the dice :");
-		dg.rollDice();
+		//determines which player goes first
+		int p1Score = 0;
+		int p2Score = 0;
+		char startPlayer;
+		do {
+			Prompt.getString("\nLet's see who will go first. One, please hit enter to roll the dice :");
+			dg.rollDice();
+			p1Score = dg.getTotal();
+			
+			Prompt.getString("\nTwo, it's your turn. Please hit enter to roll the dice :");
+			dg.rollDice();
+			p2Score = dg.getTotal();
+			
+			if (p1Score == p2Score) {
+				System.out.println("Whoops, we have a tie (both rolled " + p1Score
+					+"). Looks like we'll have to try that again . . .");
+			}
+		} while (p1Score == p2Score);				
 		
-		
-		
-		
-		System.out.println("");
-		System.out.println("");
-		System.out.println("");
-		System.out.println("");
-		System.out.println("");
-		System.out.println("");
+		System.out.println(p1Name + ", you rolled a sum of " +p1Score 
+			+ ", and " + p2Name + ", you rolled a sum of " + p2Score + ".");
+			
+		if (p1Score>p2Score) {
+			System.out.println(p1Name + ", since your sum was higher, you'll roll first.");
+			startPlayer = '1';
+		} else {
+			System.out.println(p2Name + ", since your sum was higher, you'll roll first.");
+			startPlayer = '2';
+		}
 		System.out.println("");
 		System.out.println("");
 		System.out.println("");
