@@ -71,7 +71,7 @@ public class DiceGroup {
 		for (int i = 0; i < 6; i++) {
 			System.out.print(" ");
 			for (int j = 0; j < die.length; j++) {
-				printDiceLine(die[j].getLastRollValue() + 6 * i);
+				printDiceLine(die[j].getLastRollValue()-1 + 6 * i);
 				System.out.print("     ");
 			}
 			System.out.println();
