@@ -32,7 +32,7 @@ public class DiceGroup {
 	 */
 	public void rollDice() {
 		for (int i = 0; i < 5; i++) {
-			die[0].roll();
+			die[i].roll();
 		}
 		printDice();
 	}
