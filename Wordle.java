@@ -11,7 +11,10 @@ import javax.swing.JDialog;
 /**
  *	Wordle.java
  *
- *	Provide a description here.
+ *	A game where the user tries to guess a five-letter mystery word.
+ * 	If a letter is in the word, it is highlighted yellow, if it is in
+ *  the right place, it is highlighted green, if it is not in the word, 
+ *  it is highlighed grey.
  *
  *	@author	Scott DeRuiter and David Greenstein and Michael Yeung
  *	@version	1.0
@@ -92,7 +95,7 @@ public class Wordle
 	 *	The main method, to run the program.  The constructor is called, so that
 	 *	all of the fields are initialized.  The canvas is set up, and the GUI
 	 *	(the game of Wordle) runs.
-	 *	THIS METHOD IS INCOMPLETE.
+	 *	This method is completed by me
 	 */
 	public static void main(String[] args)
 	{
@@ -100,11 +103,10 @@ public class Wordle
 		String showIt = new String("");
 
 		// Determines if args[0] and args[1] are set
-		// args[0] is "show" which means to show the word chosen
+		// args[0] is "show" which means to show the word chosen		
 		// args[1] is a word which is used as the chosen word
-
-
-
+		if (args.length >= 1) showIt = args[0];
+		if (args.length >= 2) testWord = args[1];
 
 		Wordle run = new Wordle(showIt, testWord);
 		run.setUpCanvas();
@@ -214,7 +216,7 @@ public class Wordle
 	 *	inAllowedWordFile will be called for this task.  If the guess in letters
 	 *	does not exist in the text file, a message is displayed to the user in the
 	 *	form of a JOptionPane with JDialog.
-	 *	THIS METHOD IS INCOMPLETE.
+	 *	This method is completed by me 
 	 */
 	public void processGuess ( )
 	{
@@ -233,7 +235,12 @@ public class Wordle
 		letters = "";
 		
 		// else if guess is not in words5allowed.txt then print dialog box
-
+		if (!inAllowedWordFile(letters)) {
+			JOptionPane pane = new JOptionPane(letters + " is not in the word list.");
+			JDialog d = pane.createDialog(null, "Invalid Input");
+			d.setLocation(365,250);
+			d.setVisible(true);
+		}
 	}
 	
 	/** 
@@ -346,11 +353,13 @@ public class Wordle
 	public void checkIfWonOrLost ( )
 	{
 		String lastWord = "";
+		int numGuesses = 0;
 		for(int i = 0; i < wordGuess.length; i++)
 		{
-			if(wordGuess[i].length() == 5)
+			if(wordGuess[i].length() == 5) //if the guess length is five
 			{
-				lastWord = wordGuess[i];
+				numGuesses++;
+				lastWord = wordGuess[i]; //last word is equal to last guess 
 			}
 		}
 		
@@ -365,10 +374,12 @@ public class Wordle
 		}
 		
 		// else if all guesses are filled then declare loser
-		
-		
-		
-		
+		else if (numGuesses >= 6) {
+			JOptionPane pane = new JOptionPane(lastWord + " was the word.  Press RESET to begin again");
+			JDialog d = pane.createDialog(null, "Sorry!");
+			d.setLocation(365,250);
+			d.setVisible(true);
+		}
 	}
 	
 	/** 
