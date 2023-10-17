@@ -251,15 +251,45 @@ public class Wordle
 	 */
 	public void drawPanel ( )
 	{
+		int[] letters = new int[26];
+		int guessNum = 0; //number of guesses
 		StdDraw.clear(StdDraw.WHITE);
 		
 		// Determine color of guessed letters and draw backgrounds
 	 	// 0 for not checked yet, 1 for no match, 2 for partial, 3 for exact
 		// draw guessed letter backgrounds
-
-
-
-
+		int guessNumber = 0;
+		for (int i = 0; i < wordGuess.length; i++) 
+		{
+			if(wordGuess[i].length() == 5)
+			{
+				guessNumber = i;
+			}
+		}
+		
+		String word = wordGuess[guessNumber]; //stores user word 
+		
+		for (int i = 0; i < Constants.KEYBOARD.length; i++) {
+			
+		}
+		for (int i = 0; i < wordGuess[guessNumber].length(); i++) {
+			char let = word.charAt{i);
+			//if (let 
+			if (word.indexOf(let) != -1) {
+				
+			}
+		}
+		
+	//	if (keyBoardColors
+		
+		/*
+		for (int i = 0; i < keyBoardColors.length; i++) {
+			if (Constants.KEYBOARD[i].length() == 1 && 
+				wordGuess[guessNumber].contains(Constants.KEYBOARD[i].charAt(0)))
+				keyBoardColors[i] = 2;
+			else 
+		}
+		*/
 		
 		for(int row = 0; row < 6; row++)
 		{
