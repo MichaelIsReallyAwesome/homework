@@ -109,6 +109,7 @@ public class Wordle
 		if (args.length >= 2) testWord = args[1];
 
 		Wordle run = new Wordle(showIt, testWord);
+		
 		run.setUpCanvas();
 		run.playGame();
 	}
@@ -179,6 +180,7 @@ public class Wordle
 			int counter = 0; //number of words in passed in file
 			int randIndex = 0; //index of random word
 			while (readInput.hasNextLine()) {
+				readInput.nextLine();
 				counter++;
 			}	
 			randIndex = (int)(Math.random()*counter);
@@ -186,6 +188,7 @@ public class Wordle
 			readInput = FileUtils.openToRead(inFileName); //reads user inputted file again
 			while (readInput.hasNext()) {
 				if (counter == randIndex) result = readInput.next();
+				else readInput.next();
 				counter++;
 			}
 		}
@@ -267,11 +270,26 @@ public class Wordle
 			}
 		}
 		
-		String word = wordGuess[guessNumber]; //stores user word 
+		String guess = wordGuess[guessNumber]; //stores user word 
 		
+		//compares guess to key word, stores letters in keyBoardColors
 		for (int i = 0; i < Constants.KEYBOARD.length; i++) {
-			
+			for (int j = 0; j < word.length(); j++) {
+				if (guess.charAt(j) == word.charAt(j) && 
+						guess.charAt(j) == Constants.KEYBOARD[i].charAt(0)
+						&& Constants.KEYBOARD[i].length() == 1) {
+					keyBoardColors[i] = 3;
+				}
+				else if (guess.indexOf(word.charAt(j)) > -1) {
+					keyBoardColors[i] = 2;
+				}
+				else {
+					keyBoardColors[i] = 1;
+				}
+			} 
 		}
+		
+		/*
 		for (int i = 0; i < wordGuess[guessNumber].length(); i++) {
 			char let = word.charAt{i);
 			//if (let 
@@ -279,7 +297,7 @@ public class Wordle
 				
 			}
 		}
-		
+*/
 	//	if (keyBoardColors
 		
 		/*
