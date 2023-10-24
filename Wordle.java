@@ -197,7 +197,7 @@ public class Wordle
 
 	/** 
 	 *	Checks to see if the word in the parameter list is found in the text file
-	 *	words5allowed.txt
+	 *	words5allowed.txt, case does not matter
 	 *	Returns true if the word is in the file, false otherwise.
 	 *	@param possibleWord       the word to looked for in words5allowed.txt
 	 *	@return                   true if the word is in the text file, false otherwise
@@ -207,7 +207,7 @@ public class Wordle
 	{
 		Scanner readAllowed = FileUtils.openToRead(WORDS5_ALLOWED);
 		while (readAllowed.hasNext()) {
-			if (readAllowed.next().equals(possibleWord)) return true;
+			if (readAllowed.next().equalsIgnoreCase(possibleWord)) return true;
 		}
 		return false;
 	}
@@ -234,8 +234,8 @@ public class Wordle
 				guessNumber = i + 1;
 			}
 		}
+		letters = letters.toLowerCase();
 		if (inAllowedWordFile(letters)) wordGuess[guessNumber] = letters.toUpperCase();
-		letters = "";
 		
 		// else if guess is not in words5allowed.txt then print dialog box
 		if (!inAllowedWordFile(letters)) {
@@ -244,6 +244,7 @@ public class Wordle
 			d.setLocation(365,250);
 			d.setVisible(true);
 		}
+		letters = "";
 	}
 	
 	/** 
@@ -396,7 +397,7 @@ public class Wordle
 	 *	enters the correct word with a guess.  The game is lost when the user does
 	 *	not enter the correct word with the last (6th) guess.  An appropriate message
 	 *	is displayed to the user in the form of a JOptionPane with JDialog for a win or a loss.
-	 *	THIS METHOD IS INCOMPLETE.
+	 *	This method is completed by me
 	 */
 	public void checkIfWonOrLost ( )
 	{
@@ -412,7 +413,7 @@ public class Wordle
 		}
 		
 		// declare the winner by matching the word
-		if(lastWord.equals(word))
+		if(lastWord.equals(word) && numGuesses >=1)
 		{
 			activeGame = false;
 			JOptionPane pane = new JOptionPane(lastWord + " is the word!  Press RESET to begin again");
