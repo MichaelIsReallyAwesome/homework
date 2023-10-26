@@ -89,6 +89,7 @@ public class Wordle
 		readyForMouseInput = false;
 		keyBoardColors = new int[29];
 		word = openFileAndChooseWord(WORDS5, testWord);		
+		System.out.println(word+"from ititall");
 	}
 
 	/**
@@ -162,37 +163,41 @@ public class Wordle
 	public String openFileAndChooseWord(String inFileName, String testWord)
 	{
 		String result = "";
-		boolean foundWord = false;
 		Scanner readAllowed = FileUtils.openToRead(WORDS5_ALLOWED); //reads the allowed words
 		Scanner readInput = FileUtils.openToRead(inFileName); //reads user inputted file
 				
 		//checks to see if user input is an allowed word by looping through file
 		while (readAllowed.hasNext()) {
 			//if word allowed, set result to word and found word to true
-			if (readAllowed.nextLine().equals(testWord)) {
-				result = testWord;
-				foundWord = true;
+			if (readAllowed.nextLine().equalsIgnoreCase(testWord)) {
+				return testWord;
 			}
 		}
 		
 		//if word not allowed, choose random word from passed in file
-		if (!foundWord) {
-			int counter = 0; //number of words in passed in file
-			int randIndex = 0; //index of random word
-			while (readInput.hasNextLine()) {
-				readInput.nextLine();
-				counter++;
-			}	
-			randIndex = (int)(Math.random()*counter);
-			
-			readInput = FileUtils.openToRead(inFileName); //reads user inputted file again
-			while (readInput.hasNext()) {
-				if (counter == randIndex) result = readInput.next();
-				else readInput.next();
+		int counter = 0; //number of words in passed in file
+		int randIndex = 0; //index of random word
+		while (readInput.hasNextLine()) {
+			readInput.nextLine();
+			counter++;
+		}	
+		randIndex = (int)(Math.random()*counter);
+		
+		//delete after done with code
+		System.out.println(randIndex);
+		
+		//resets scanner and counter
+		readInput = FileUtils.openToRead(inFileName); //reads user inputted file again4
+		counter = 0;
+		while (readInput.hasNext()) {
+			if (counter == randIndex) return readInput.next();
+			else {
+				readInput.next();
 				counter++;
 			}
 		}
-		return result;
+		//delete after done with code
+		throw new Error("[ASSERT] Failed you didn't find a word, fix your code michael obi");
 	}
 
 	/** 
@@ -226,6 +231,8 @@ public class Wordle
 		letters = letters.toUpperCase();
 		
 		// if guess is in words5allowed.txt then put into guess list
+		
+		//getting number of guesses by user
 		int guessNumber = 0;
 		for(int i = 0; i < wordGuess.length; i++) 
 		{
@@ -234,17 +241,19 @@ public class Wordle
 				guessNumber = i + 1;
 			}
 		}
-		letters = letters.toLowerCase();
-		if (inAllowedWordFile(letters)) wordGuess[guessNumber] = letters.toUpperCase();
+		
+		if (inAllowedWordFile(letters)) {
+			wordGuess[guessNumber] = letters;
+			letters = "";
+		}
 		
 		// else if guess is not in words5allowed.txt then print dialog box
-		if (!inAllowedWordFile(letters)) {
+		else {
 			JOptionPane pane = new JOptionPane(letters + " is not in the word list.");
 			JDialog d = pane.createDialog(null, "Invalid Input");
 			d.setLocation(365,250);
 			d.setVisible(true);
 		}
-		letters = "";
 	}
 	
 	/** 
@@ -271,9 +280,13 @@ public class Wordle
 			}
 		}
 		
+		//problem here, guess null, see where wordguess value updated
 		String guess = wordGuess[guessNumber]; //stores user word 
 		
+		//System.out.print(guess);
 		//compares guess to key word, stores letters in keyBoardColors
+		System.out.println(guess +"   "+guess.length()+" " + word +" " +word.length());
+		
 		for (int i = 0; i < Constants.KEYBOARD.length; i++) {
 			for (int j = 0; j < word.length(); j++) {
 				if (guess.charAt(j) == word.charAt(j) && 
@@ -289,7 +302,7 @@ public class Wordle
 				}
 			} 
 		}
-		
+		//for (int i = 0; i < keyBoardColors.length; i++) System.out.println(keyBoardColors[i]);
 		/*
 		for (int i = 0; i < wordGuess[guessNumber].length(); i++) {
 			char let = word.charAt{i);
