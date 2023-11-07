@@ -1,7 +1,7 @@
 /**
- *	Utilities for handling HTML
+ *	Utilities for handling HTML 
  *
- *	@author	Michael Yeung
+ *	@author	Michael Yeung 
  *	@since	October 31, 2023
  */
 public class HTMLUtilities {
@@ -61,11 +61,6 @@ public class HTMLUtilities {
 					}
 				}
 			} else if (inNumber) { //if letter is a number
-				/*
-				if (count - 1 >= 0 && str.charAt(count - 1) == '-') {
-					token = "-" + token;
-				}		
-				* */	
 				//will not work if letter sandwiched between numbers?, multiple special cases in num
 				//not a number anymore, ensure functionality of hyphen or e
 				if (Character.isDigit(let) || let == 'e' || let == '-' || let == '.') {
@@ -79,6 +74,10 @@ public class HTMLUtilities {
 					if (isPunctuation(let)) { //checks if punctuation
 						result[tokCount] = "" + let;
 						tokCount++;
+					}
+					else if (let == '<') {
+						inToken = true;
+						token += let;
 					}
 				}
 				
