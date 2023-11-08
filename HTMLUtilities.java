@@ -100,7 +100,11 @@ public class HTMLUtilities {
 					result[tokCount] = "" + let;
 					tokCount++;
 				}
-			}			
+			}	
+			if (token.length() > 0 && count + 1 >= str.length()) {
+				result[tokCount] = token;
+				tokCount++;
+			}
 			count++;	
 		}
 		
