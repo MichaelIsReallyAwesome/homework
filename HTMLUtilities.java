@@ -5,7 +5,16 @@
  *	@since	October 31, 2023
  */
 public class HTMLUtilities {
-
+	// NONE = not nested in a block, COMMENT = inside a comment block
+	// PREFORMAT = inside a pre-format block
+	private enum TokenState { NONE, COMMENT, PREFORMAT };
+	// the current tokenizer state
+	private TokenState state;
+	
+	public HTMLUtilities() {
+		state = NONE; //default state is none
+	}
+	
 	/**
 	 *	Break the HTML string into tokens. The array returned is
 	 *	exactly the size of the number of tokens in the HTML string.
@@ -27,83 +36,135 @@ public class HTMLUtilities {
 		int count = 0; //index of letter in word
 		
 		while (count < str.length()) {
-			char let = str.charAt(count); // current letter being analyzed
-			if (inToken) { //if letter is a token
-				if (let == '>') {
-					inToken = false;
-					result[tokCount] = token + let;
-					tokCount++;
-					token = ""; // wipes token
-					if (isPunctuation(let)) { //checks if punctuation
-						result[tokCount] = "" + let;
-						tokCount++;
+			char let = str.charAt(count); // current letter being analyzed4
+			if (state == NONE) { //if state not comment or preformatted
+				if (inToken) { //if letter is a token
+					while (str.charAt(count) != '>' && state != TOKEN) { //stores whole token
+						//if is comment block
+						if (count - 1 >= 0 && str.charAt(count - 1) == '<' 
+								&& str.charAt(count) == '!') {
+							state = COMMENT;
+						}
+						else {
+							token += str.charAt(count);
+							count++;
+						}
 					}
-				}
-				else {
-					token += let;
-				}
-			} else if (inWord) { //if letter is a word
-				//if let is a character or a hyphen between two letters
-				if (Character.isLetter(let) || count - 1 >= 0
-						&& count + 1 < str.length() && Character.isLetter(str.charAt(count - 1))
-						&& Character.isLetter(str.charAt(count + 1))
-						&& let == '-') {
-					token += let;
-				}
-				else {
-					inWord = false; //not in word anymore
-					result[tokCount] = token; //stores word
-					tokCount++;
-					token = ""; //wipes token
-					if (isPunctuation(let)) { //checks if punctuation
-						result[tokCount] = "" + let; 
-						tokCount++;
+					if (token.equals("<pre>")) {
+						state = PREFORMAT;
 					}
-				}
-			} else if (inNumber) { //if letter is a number
-				//will not work if letter sandwiched between numbers?, multiple special cases in num
-				//not a number anymore, ensure functionality of hyphen or e
-				if (Character.isDigit(let) || let == 'e' || let == '-' || let == '.') {
-					token += let;
-				}
-				else {
-					inNumber = false;
-					result[tokCount] = token;
-					tokCount++;
-					token = ""; // wipes token
-					if (isPunctuation(let)) { //checks if punctuation
-						result[tokCount] = "" + let;
+					else if (state != COMMENT) {
+						inToken = false;
+						result[tokCount] = token + let;
 						tokCount++;
+						token = ""; // wipes token
+						if (isPunctuation(let)) { //checks if punctuation
+							result[tokCount] = "" + let;
+							tokCount++;
+						}
+					}
+					
+					
+					/*
+					if (let == '>') {
+						inToken = false;
+						result[tokCount] = token + let;
+						tokCount++;
+						token = ""; // wipes token
+						if (isPunctuation(let)) { //checks if punctuation
+							result[tokCount] = "" + let;
+							tokCount++;
+						}
+					}
+					else {
+						token += let;
+					}
+					* */
+				} else if (inWord) { //if letter is a word
+					//if let is a character or a hyphen between two letters
+					if (Character.isLetter(let) || count - 1 >= 0
+							&& count + 1 < str.length() && Character.isLetter(str.charAt(count - 1))
+							&& Character.isLetter(str.charAt(count + 1))
+							&& let == '-') {
+						token += let;
+					}
+					else {
+						inWord = false; //not in word anymore
+						if (token.equals("<pre>")) {
+							state = PREFORMAT;
+						}
+						result[tokCount] = token; //stores word
+						tokCount++;
+						token = ""; //wipes token
+						if (isPunctuation(let)) { //checks if punctuation
+							result[tokCount] = "" + let; 
+							tokCount++;
+						}
+					}
+				} else if (inNumber) { //if letter is a number
+					//will not work if letter sandwiched between numbers?, multiple special cases in num
+					//not a number anymore, ensure functionality of hyphen or e
+					if (Character.isDigit(let) || let == 'e' || let == '-' || let == '.') {
+						token += let;
+					}
+					else {
+						inNumber = false;
+						result[tokCount] = token;
+						tokCount++;
+						token = ""; // wipes token
+						if (isPunctuation(let)) { //checks if punctuation
+							result[tokCount] = "" + let;
+							tokCount++;
+						}
+						else if (let == '<') {
+							inToken = true;
+							token += let;
+						}
+					}
+					
+				} else { //else checks if letter is start of token or word
+					if (count + 3 < str.length() && let == '<' && str.charAt(count + 1) == '!'
+							&& str.charAt(count + 2) == '-' && str.charAt(count + 3) == '-') {
+						state = COMMENT;
 					}
 					else if (let == '<') {
 						inToken = true;
 						token += let;
 					}
-				}
-				
-				
-			} else { //else checks if letter is start of token or word
-				if (let == '<') {
-					inToken = true;
-					token += let;
-				}
-				else if (Character.isLetter(let)) {
-					inWord = true;
-					token += let;
-				}
-				else if (Character.isDigit(let) || count + 1 < str.length() 
-						&& Character.isDigit(str.charAt(count + 1)) && let == '-') {
-					inNumber = true;
-					token += let;
-				}
-				else if (isPunctuation(let)) { //checks if punctuation
-					result[tokCount] = "" + let;
+					else if (Character.isLetter(let)) {
+						inWord = true;
+						token += let;
+					}
+					//checks if let is digit or -digit or .digit or -.digit
+					else if (Character.isDigit(let) 
+							|| count + 1 < str.length() 
+							&& Character.isDigit(str.charAt(count + 1)) && let == '-'
+							|| let == '.' && Character.isDigit(str.charAt(count + 1))
+							|| count + 2 < str.length() && Character.isDigit(str.charAt(count + 2))
+							&& let == '-' && str.charAt(count + 1) == '.' ) {
+						inNumber = true;
+						token += let;
+					}
+					else if (isPunctuation(let)) { //checks if punctuation
+						result[tokCount] = "" + let;
+						tokCount++;
+					}
+				}	
+				if (token.length() > 0 && count + 1 >= str.length()) {
+					result[tokCount] = token;
 					tokCount++;
 				}
-			}	
-			if (token.length() > 0 && count + 1 >= str.length()) {
-				result[tokCount] = token;
-				tokCount++;
+			}
+			else if (state == PREFORMAT) {
+				//if (
+			}
+			else if (state == COMMENT) {
+				//checks if let is -->, where the comment block ends
+				if (count + 2 < str.length() && str.charAt(count + 1) == '-' 
+						&& str.charAt(count + 2) == '>' && let == '-') {
+					count += 2;
+					state = NONE;		
+				}
 			}
 			count++;	
 		}
