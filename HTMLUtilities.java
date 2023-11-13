@@ -156,7 +156,16 @@ public class HTMLUtilities {
 				}
 			}
 			else if (state == PREFORMAT) {
-				//if (
+				if (let == '<') {
+					while (str.charAt(count) == '>') {
+						token += str.charAt(count);
+						count++;
+					}
+					if (token.equals("<pre>")) {
+						state = TokenState.NONE;
+					}
+					token = "";
+				}
 			}
 			else if (state == COMMENT) {
 				//checks if let is -->, where the comment block ends
