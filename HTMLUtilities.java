@@ -50,12 +50,14 @@ public class HTMLUtilities {
 							count++;
 						}
 					}
+					token += str.charAt(count);
+					System.out.print(token);
 					if (token.equals("<pre>")) {
 						state = TokenState.PREFORMAT;
 					}
 					else if (state != TokenState.COMMENT) {
 						inToken = false;
-						result[tokCount] = token + let;
+						result[tokCount] = token;
 						tokCount++;
 						token = ""; // wipes token
 						if (isPunctuation(let)) { //checks if punctuation
@@ -90,13 +92,15 @@ public class HTMLUtilities {
 					}
 					else {
 						inWord = false; //not in word anymore
-						if (token.equals("<pre>")) {
-							state = TokenState.PREFORMAT;
-						}
 						result[tokCount] = token; //stores word
 						tokCount++;
 						token = ""; //wipes token
-						if (isPunctuation(let)) { //checks if punctuation
+						if (let == '<') {
+							inToken = true;
+							count--; //goes back a letter
+							//token += let;
+						}
+						else if (isPunctuation(let)) { //checks if punctuation
 							result[tokCount] = "" + let; 
 							tokCount++;
 						}
@@ -156,7 +160,10 @@ public class HTMLUtilities {
 				}
 			}
 			else if (state == TokenState.PREFORMAT) {
-				//if (
+				result[tokCount] = str;
+				count = str.length();
+				tokCount++;
+				if (str.equals("</pre>")) state = TokenState.NONE;
 			}
 			else if (state == TokenState.COMMENT) {
 				//checks if let is -->, where the comment block ends
