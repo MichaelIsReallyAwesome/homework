@@ -12,7 +12,7 @@ public class HTMLUtilities {
 	private TokenState state;
 	
 	public HTMLUtilities() {
-		state = NONE; //default state is none
+		state = TokenState.NONE; //default state is none
 	}
 	
 	/**
@@ -37,13 +37,13 @@ public class HTMLUtilities {
 		
 		while (count < str.length()) {
 			char let = str.charAt(count); // current letter being analyzed4
-			if (state == NONE) { //if state not comment or preformatted
+			if (state == TokenState.NONE) { //if state not comment or preformatted
 				if (inToken) { //if letter is a token
-					while (str.charAt(count) != '>' && state != TOKEN) { //stores whole token
+					while (str.charAt(count) != '>' && state != TokenState.COMMENT) { //stores whole token
 						//if is comment block
 						if (count - 1 >= 0 && str.charAt(count - 1) == '<' 
 								&& str.charAt(count) == '!') {
-							state = COMMENT;
+							state = TokenState.COMMENT;
 						}
 						else {
 							token += str.charAt(count);
@@ -51,9 +51,9 @@ public class HTMLUtilities {
 						}
 					}
 					if (token.equals("<pre>")) {
-						state = PREFORMAT;
+						state = TokenState.PREFORMAT;
 					}
-					else if (state != COMMENT) {
+					else if (state != TokenState.COMMENT) {
 						inToken = false;
 						result[tokCount] = token + let;
 						tokCount++;
@@ -91,7 +91,7 @@ public class HTMLUtilities {
 					else {
 						inWord = false; //not in word anymore
 						if (token.equals("<pre>")) {
-							state = PREFORMAT;
+							state = TokenState.PREFORMAT;
 						}
 						result[tokCount] = token; //stores word
 						tokCount++;
@@ -125,7 +125,7 @@ public class HTMLUtilities {
 				} else { //else checks if letter is start of token or word
 					if (count + 3 < str.length() && let == '<' && str.charAt(count + 1) == '!'
 							&& str.charAt(count + 2) == '-' && str.charAt(count + 3) == '-') {
-						state = COMMENT;
+						state = TokenState.COMMENT;
 					}
 					else if (let == '<') {
 						inToken = true;
@@ -155,24 +155,15 @@ public class HTMLUtilities {
 					tokCount++;
 				}
 			}
-			else if (state == PREFORMAT) {
-				if (let == '<') {
-					while (str.charAt(count) == '>') {
-						token += str.charAt(count);
-						count++;
-					}
-					if (token.equals("<pre>")) {
-						state = TokenState.NONE;
-					}
-					token = "";
-				}
+			else if (state == TokenState.PREFORMAT) {
+				//if (
 			}
-			else if (state == COMMENT) {
+			else if (state == TokenState.COMMENT) {
 				//checks if let is -->, where the comment block ends
 				if (count + 2 < str.length() && str.charAt(count + 1) == '-' 
 						&& str.charAt(count + 2) == '>' && let == '-') {
 					count += 2;
-					state = NONE;		
+					state = TokenState.NONE;		
 				}
 			}
 			count++;	
