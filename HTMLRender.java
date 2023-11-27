@@ -28,7 +28,7 @@ public class HTMLRender {
 	
 	// the array holding all the tokens of the HTML file
 	private String [] tokens;
-	private final int TOKENS_SIZE = 100000;	// size of array
+	private int tokenSize;	// size of array
 
 	// SimpleHtmlRenderer fields
 	private SimpleHtmlRenderer render;
@@ -56,6 +56,7 @@ public class HTMLRender {
 		
 		util = new HTMLUtilities();
 
+		tokenSize = 0; //going to be initialized when looping through tokens
 		tokenCounter = 0;
 		tokLoop = 0;
 		lineLimit = 80;
@@ -120,11 +121,17 @@ public class HTMLRender {
 					state = TextState.H6;
 					lineLimit = 120;
 				}
-				else if (token.equalsIgnoreCase("</p>")) {
+				else if (token.equalsIgnoreCase("</p>") 
+						|| token.equalsIgnoreCase("<p>")) {
+					browser.println();
 					browser.println();
 					lineCount = 0;
 				}
-				else if (token.equalsIgnoreCase("<p>")) {} //do nothing
+				else if (token.equalsIgnoreCase("<p>")) {
+					browser.println();
+					browser.println();
+					lineCount = 0;
+				}
 				else if (token.equalsIgnoreCase("<hr>")) {
 					browser.printHorizontalRule();
 				}
@@ -247,7 +254,6 @@ public class HTMLRender {
 			}
 		}
 		else { //if token fits within line
-			//System.out.println(token);
 			//punctuation marks don't have an added space
 			if (token.equals("!") || token.equals("?") || token.equals(".")) {
 				if (state == TextState.BOLD) browser.printBold(token);
@@ -280,7 +286,7 @@ public class HTMLRender {
 				//tokenCounter++;
 				for (int i = 0; i < lineTokens.length; i++) {
 					tokens[tokenCounter+i] = lineTokens[i];
-					num++;
+					tokenSize++;
 				}
 			
 			
