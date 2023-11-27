@@ -22,6 +22,8 @@
  * 	@since November 16, 2023
  *	@version 1.0
  */
+
+import java.util.Scanner;
 public class HTMLRender {
 	
 	// the array holding all the tokens of the HTML file
@@ -35,7 +37,15 @@ public class HTMLRender {
 	//object of html utilities
 	private HTMLUtilities util;	
 	private int tokenCounter;
-	
+	private int lineLimit; //how many chars can be in each line
+	private int lineCount; //how many chars are in each line
+
+	private int tokLoop; //index of the while loop going through tokens
+	private enum TextState {NONE, PREFORMAT, BOLD, ITALIC, H1, H2, H3, H4, H5, H6};
+	private TextState state = TextState.NONE;
+
+	int num;
+
 	public HTMLRender() {
 		// Initialize token array
 		tokens = new String[TOKENS_SIZE];
@@ -45,23 +55,140 @@ public class HTMLRender {
 		browser = render.getHtmlPrinter();
 		
 		util = new HTMLUtilities();
-		tokenCounter++;
+
+		tokenCounter = 0;
+		tokLoop = 0;
+		lineLimit = 80;
+		lineCount = 0;
+
+		num = 0;
 	}
 	
 	
 	public static void main(String[] args) {
 		HTMLRender hf = new HTMLRender();
-		hf.run();
 		if (args.length > 0)
-			storeTokens(args[0]);
+			hf.storeTokens(args[0]);
 		// otherwise print out usage message
 		else {
 			System.out.println("Usage: java HTMLTester <htmlFileName>");
 			System.exit(0);
 		}
+		hf.run();
 	}
 	
 	public void run() {
+		for (int i = 0; i < num; i++) {
+			System.out.println(tokens[i]);
+		}
+		String token = ""; //holds current token
+		while (tokens[tokLoop] != null) { //(tokLoop < TOKENS_SIZE) { //
+			token = tokens[tokLoop];
+			//System.out.println(token);
+			if (state == TextState.NONE) { 
+				//checks if state is to be changed
+				if (token.equalsIgnoreCase("<b>")) {
+					state = TextState.BOLD;
+				}
+				else if (token.equalsIgnoreCase("<i>")) {
+					state = TextState.ITALIC;
+				}
+				else if (token.equalsIgnoreCase("<pre>")) {
+					state = TextState.PREFORMAT;
+				}
+				else if (token.equalsIgnoreCase("<h1>")) {
+					state = TextState.H1;
+					lineLimit = 40;
+				}
+				else if (token.equalsIgnoreCase("<h2>")) {
+					state = TextState.H2;
+					lineLimit = 50;
+				}
+				else if (token.equalsIgnoreCase("<h3>")) {
+					state = TextState.H3;
+					lineLimit = 60;
+				}
+				else if (token.equalsIgnoreCase("<h4>")) {
+					state = TextState.H4;
+					lineLimit = 80;
+				}
+				else if (token.equalsIgnoreCase("<h5>")) {
+					state = TextState.H5;
+					lineLimit = 100;
+				}
+				else if (token.equalsIgnoreCase("<h6>")) {
+					state = TextState.H6;
+					lineLimit = 120;
+				}
+				else if (token.equalsIgnoreCase("</p>")) {
+					browser.println();
+					lineCount = 0;
+				}
+				else if (token.equalsIgnoreCase("<p>")) {} //do nothing
+				else if (token.equalsIgnoreCase("<hr>")) {
+					browser.printHorizontalRule();
+				}
+				else if (token.equalsIgnoreCase("<br>")) {
+					browser.printBreak();
+				}
+				else { //if none of the above, verifies line char limit, prints word out normally
+					printStandardText(token);
+				}
+			}
+			else { //print tags with state/change them back if necessary
+				if (state == TextState.BOLD) {
+					if (token.equalsIgnoreCase("</b>")) {
+						state = TextState.NONE;
+					}
+					else if (token.equalsIgnoreCase("<br>")) {
+						browser.printBreak();
+					}
+					else if (token.equalsIgnoreCase("<hr>")) {
+						browser.printHorizontalRule();
+					}
+					else {
+						printStandardText(token);
+					}
+				}
+				else if (state == TextState.ITALIC) {
+					if (token.equalsIgnoreCase("</i>")) {
+						state = TextState.NONE;
+					}
+					else if (token.equalsIgnoreCase("<br>")) {
+						browser.printBreak();
+					}
+					else if (token.equalsIgnoreCase("<hr>")) {
+						browser.printHorizontalRule();
+					}
+					else {
+						printStandardText(token);
+					}
+				}
+				else if (state == TextState.PREFORMAT) {
+					
+				}
+				else if (state == TextState.H1) {
+					
+				}
+				else if (state == TextState.H2) {
+					
+				}
+				else if (state == TextState.H3) {
+					
+				}
+				else if (state == TextState.H4) {
+					
+				}
+				else if (state == TextState.H5) {
+					
+				}
+				else if (state == TextState.H6) {
+					
+				}
+			}
+
+			tokLoop++;
+		}
 		// Sample renderings from HtmlPrinter class
 		
 		// Print plain text without line feed at end
@@ -102,17 +229,67 @@ public class HTMLRender {
 		browser.print("The end");
 		
 	}
-	public void storeTokens(String fileName) {
-		input = FileUtils.openToRead(fileName);
-		
-		// Read each line of the HTML file, tokenize, then print tokens
-		while (input.hasNext()) {
-			String line = input.nextLine();
-			String [] lineTokens = util.tokenizeHTMLString(line);
-			for (int i = 0; i < lineTokens.length; i++) {
-				tokens[tokenCounter] = lineTokens[i];
-				tokenCounter++;
+	/*
+	 * Prints out a token as a string, taking into account spaces between words,
+	 * quotation tags, text state (bold, italic, etc) and character limits per line. 
+	 */
+	private void printStandardText(String token) {
+		if (lineCount + token.length() + 1 > lineLimit) { //if token doesn't fits within line
+			if ((token.equalsIgnoreCase("<q>") || token.equalsIgnoreCase("</q>"))
+					&& lineCount + 1 <= lineLimit) { //if token is "
+				browser.print("\"");
+				lineCount++;
 			}
+			else {
+				browser.println();
+				lineCount = 0;
+				tokLoop--;
+			}
+		}
+		else { //if token fits within line
+			//System.out.println(token);
+			//punctuation marks don't have an added space
+			if (token.equals("!") || token.equals("?") || token.equals(".")) {
+				if (state == TextState.BOLD) browser.printBold(token);
+				else if (state == TextState.ITALIC) browser.printItalic(token);
+				else browser.print(token);
+				lineCount++;
+			}
+			else if (lineCount == 0) { //no extra space at beginning of line
+				if (state == TextState.BOLD) browser.printBold(token);
+				else if (state == TextState.ITALIC) browser.printItalic(token);
+				else browser.print(token);
+				lineCount += token.length();
+			}
+			else { //normal words that have one space between them
+				if (state == TextState.BOLD) browser.printBold(" " + token);
+				else if (state == TextState.ITALIC) browser.printItalic(" " + token);
+				else browser.print(" " + token);
+				lineCount += token.length() + 1;
+			}
+		}
+	}
+	/* Stores HTML tokens from a file into a String array */
+	private void storeTokens(String fileName) {
+		Scanner input = FileUtils.openToRead(fileName);
+		//Stores all the tokens from each line into a big array
+		while (input.hasNextLine()) {
+			String [] lineTokens = util.tokenizeHTMLString(input.nextLine());
+			//for (int i = 0; i < lineTokens.length; i++) {
+				//tokens[tokenCounter + i] = lineTokens[i]; //tokens[tokenCounter] = lineTokens[i];
+				//tokenCounter++;
+				for (int i = 0; i < lineTokens.length; i++) {
+					tokens[tokenCounter+i] = lineTokens[i];
+					num++;
+				}
+			
+			
+			//}
+			// Updates the number of tokens
+			tokenCounter += lineTokens.length;
+
+
+			//tokenCounter += lineTokens.length;
 		}
 	}	
 }
