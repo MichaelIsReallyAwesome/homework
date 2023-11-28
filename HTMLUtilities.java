@@ -90,19 +90,47 @@ public class HTMLUtilities {
 							&& let == '-') {
 						token += let;
 					}
-					else {
+					else { //figure out punctuation right after tags
 						inWord = false; //not in word anymore
 						result[tokCount] = token; //stores word
 						tokCount++;
 						token = ""; //wipes token
+						
 						if (let == '<') {
 							inToken = true;
 							count--; //goes back a letter
 							//token += let;
 						}
-						else if (isPunctuation(let)) { //checks if punctuation
-							result[tokCount] = "" + let; 
-							tokCount++;
+						//accounts for all versions of digit
+						else if (Character.isDigit(let)) {
+							inNumber = true;
+							token += let;
+						}
+						else if (count + 1 < str.length()) {
+							//System.out.println(let + " " + token);
+							char let2 = str.charAt(count + 1);
+							if (let == '-' && Character.isDigit(let2)
+									|| let == '.' && Character.isDigit(let2)) {
+								inNumber = true;
+								token += let;
+							}
+							else if (count + 2 < str.length()) {
+								char let3 = str.charAt(count + 2);
+								if (let == '-' && let2 == '.' && Character.isDigit(let3)) {
+									inNumber = true;
+									token += let;
+								}
+								else if (isPunctuation(let)) { //checks if punctuation
+									result[tokCount] = "" + let; 
+									tokCount++;
+									System.out.println(let);
+								}	
+							}	
+							else if (isPunctuation(let)) { //checks if punctuation
+								result[tokCount] = "" + let; 
+								tokCount++;
+								System.out.println(let);
+							}					
 						}
 					}
 				} else if (inNumber) { //if letter is a number
@@ -119,10 +147,11 @@ public class HTMLUtilities {
 						if (isPunctuation(let)) { //checks if punctuation
 							result[tokCount] = "" + let;
 							tokCount++;
+							//System.out.println(let);
 						}
 						else if (let == '<') {
 							inToken = true;
-							token += let;
+							count--;
 						}
 					}
 					
@@ -139,20 +168,45 @@ public class HTMLUtilities {
 						inWord = true;
 						token += let;
 					}
-					//checks if let is digit or -digit or .digit or -.digit
-					else if (Character.isDigit(let) 
-							|| count + 1 < str.length() 
-							&& Character.isDigit(str.charAt(count + 1)) && let == '-'
-							|| let == '.' && Character.isDigit(str.charAt(count + 1))
-							|| count + 2 < str.length() && Character.isDigit(str.charAt(count + 2))
-							&& let == '-' && str.charAt(count + 1) == '.' ) {
+					//accounts for all versions of a number
+					else if (Character.isDigit(let)) {
 						inNumber = true;
 						token += let;
+					}
+					else if (count + 1 < str.length()) {
+						
+						char let2 = str.charAt(count + 1);
+						if (let == '-' && Character.isDigit(let2)
+								|| let == '.' && Character.isDigit(let2)) {
+							inNumber = true;
+							token += let;
+						}
+						else if (count + 2 < str.length()) {
+							char let3 = str.charAt(count + 2);
+							if (let == '-' && let2 == '.' && Character.isDigit(let3)) {
+								inNumber = true;
+								token += let;
+							}
+						}
 					}
 					else if (isPunctuation(let)) { //checks if punctuation
 						result[tokCount] = "" + let;
 						tokCount++;
 					}
+					/*
+					//checks if let is digit or -digit or .digit or -.digit
+					else if (count + 2 < str.length()) {
+						char let2 = str.charAt(count + 1);
+						char let3 = str.charAt(count + 2);
+						if (Character.isDigit(let)  
+							|| let == '-' && Character.isDigit(let2)
+							|| let == '.' && Character.isDigit(let2)
+							|| let == '-' && let2 == '.' && Character.isDigit(let3)) {
+						inNumber = true;
+						token += let;
+						}
+					}		
+					*/			
 				}	
 				if (token.length() > 0 && count + 1 >= str.length()) {
 					result[tokCount] = token;
@@ -194,10 +248,10 @@ public class HTMLUtilities {
 	public void printTokens(String[] tokens) {
 		if (tokens == null) return;
 		for (int a = 0; a < tokens.length; a++) {
-			if (a % 5 == 0) System.out.print("\n  ");
-			System.out.print("[token " + a + "]: " + tokens[a] + " ");
+			if (a % 5 == 0) {}//System.out.print("\n  ");
+			//System.out.print("[token " + a + "]: " + tokens[a] + " ");
 		}
-		System.out.println();
+		//System.out.println();
 	}
 	
 	/**
