@@ -153,6 +153,7 @@
 					}
 					else if (token.equalsIgnoreCase("<hr>")) {
 						browser.printHorizontalRule();
+						lineCount = 0;
 					}
 					else if (token.equalsIgnoreCase("<br>")) {
 						browser.printBreak();
@@ -187,6 +188,7 @@
 						}
 						else if (token.equalsIgnoreCase("<hr>")) {
 							browser.printHorizontalRule();
+							lineCount = 0;
 						}
 						else {
 							printStandardText(token);
