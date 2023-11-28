@@ -83,7 +83,7 @@
 	  */
 	 public void run() {
 		 for (int i = 0; i < tokenSize; i++) {
-			 System.out.println(tokens[i]);
+			 //System.out.println(tokens[i]);
 		 }
 		 String token = ""; //holds current token
 		// while (tokens[tokLoop] != null) { //(tokLoop < TOKENS_SIZE) { //
@@ -145,13 +145,11 @@
 						browser.println();
 					}
 					else if (token.equalsIgnoreCase("</p>")) {
-						browser.println();
-						browser.println();
+						browser.printBreak();
 						lineCount = 0;
 					}					
 					else if (token.equalsIgnoreCase("<p>")) {
-						//browser.println();
-						browser.println();
+						browser.printBreak();
 						lineCount = 0;
 					}
 					else if (token.equalsIgnoreCase("<hr>")) {
@@ -172,13 +170,11 @@
 							token.equalsIgnoreCase("</html>") || 
 							token.equalsIgnoreCase("</body>")) {} //do nothing
 					else if (token.equalsIgnoreCase("</p>")) {
-						browser.println();
-						browser.println();
+						browser.printBreak();
 						lineCount = 0;
 					}					
 					else if (token.equalsIgnoreCase("<p>")) {
-						//browser.println();
-						browser.println();
+						browser.printBreak();
 						lineCount = 0;
 					}
 					if (state == TextState.BOLD) {
@@ -411,6 +407,7 @@
 		 while (input.hasNextLine()) {
 			String [] lineTokens = util.tokenizeHTMLString(input.nextLine());
 			for (int i = 0; i < lineTokens.length; i++) tokenSize++;			
+ 		
  		 }
 		 tokens = new String[tokenSize];
 
