@@ -77,7 +77,10 @@
 		 }
 		 hf.run();
 	 }
-	 
+	 /**
+	  * Iterates through token array and prints out the tokens in the ways
+	  * specified by the tags
+	  */
 	 public void run() {
 		 for (int i = 0; i < tokenSize; i++) {
 			 System.out.println(tokens[i]);
