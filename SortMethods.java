@@ -5,7 +5,7 @@
  *	@since	30 November, 2023
  */
 public class SortMethods {
-	
+	private Integer[] temp; //array for merge sort
 	/**
 	 *	Bubble Sort algorithm - in ascending order
 	 *	@param arr		array of Integer objects to sort
@@ -104,7 +104,35 @@ public class SortMethods {
 	 *	Merge Sort algorithm - in ascending order (you implement)
 	 *	@param arr		array of Integer objects to sort
 	 */
-	public void mergeSort(Integer [] arr) {}
+	public void mergeSort(Integer [] arr) {
+		temp = new Integer[arr.length];
+		mergeSort(arr, 0, arr.length - 1);
+		for (int i = 0; i < temp.length; i++) {
+			arr[i] = temp[i];
+		}
+	}
+	/** Helper recursive method */
+	private void mergeSort(Integer[] arr, int start, int end) {
+		if (start != end) { //if small array is 1 in length
+			mergeSort(arr, start, (start + end + 1) / 2 - 1);
+			mergeSort(arr, (start + end + 1) / 2, end);
+			
+			int counter = start; //number of elements stored
+			int pr = (start + end + 1) / 2 + 1; //right pointer
+			for (int pl = 0; pl < (start + end + 1) / 2; pl++) { //left pointer
+				while (pr <= end && arr[pr] < arr[pl]) {
+					temp[counter] = arr[pr];
+					pr++;
+				}
+			}
+			while (pr <= end) {
+				temp[counter] = arr[pr];
+				pr++;
+				counter++;
+			}
+		}
+			 
+	}
 	
 	/*****************************************************************/
 	/************************* For Testing ***************************/
@@ -166,7 +194,7 @@ public class SortMethods {
 		printArray(arr);
 		System.out.println();
 */
-/*		
+		
 		for (int a = 0; a < 10; a++)
 			arr[a] = (int)(Math.random() * 100) + 1;
 		System.out.println("\nMerge Sort");
@@ -177,6 +205,6 @@ public class SortMethods {
 		System.out.println("Array after sort:");
 		printArray(arr);
 		System.out.println();
-*/
+
 	}
 }
