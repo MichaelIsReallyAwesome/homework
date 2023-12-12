@@ -1,5 +1,7 @@
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.Comparator;
 /**
  *	Population - <description goes here>
  *
@@ -8,7 +10,7 @@ import java.util.Scanner;
  *	@author	Michael Yeung
  *	@since	11 December, 2023
  */
-public class Population {
+public class Population { //implements Comparator<City> {
 	
 	// List of cities
 	private List<City> cities;
@@ -16,20 +18,29 @@ public class Population {
 	// US data file
 	private final String DATA_FILE = "usPopData2017.txt";
 	
+	/** Constructor */
+	public Population() {
+		cities = new ArrayList<City>();
+	}
 	public void storePopulationData() {
 		int numCities = 0;
+		String state = "";
+		String citName = "";
+		String citType = "";			
+		int pop = 0;
+		
 		Scanner input = FileUtils.openToRead(DATA_FILE);
-		while (input.hasNextLine()) {
-			Scanner lineInput = input.useDelimiter("\t | \n");
-
-			String state = lineInput.next();
-			String citName = lineInput.next();
-			String citType = lineInput.next();
-			int pop = lineInput.nextInt();
-	
+		input.useDelimiter("[\t\n]");
+		while (input.hasNext()) {
+			state = input.next();
+			citName = input.next();
+			citType = input.next();
+			pop = input.nextInt();
+			System.out.println(state +"  " + citName+"  "+citType+"  "+pop);
 			cities.add(numCities, new City(citName, state, citType, pop));
 			numCities++;
 		}
+		
 	}
 	/**	Prints the introduction to Population */
 	public void printIntroduction() {
@@ -52,5 +63,8 @@ public class Population {
 		System.out.println("6. All cities matching a name sorted by population");
 		System.out.println("9. Quit");
 	}
-	
+	public static void main(String[] args) {
+		Population pop = new Population();
+		pop.storePopulationData();
+	}
 }
