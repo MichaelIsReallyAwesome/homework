@@ -60,44 +60,6 @@ public class SortMethods {
 				inner--;
 			}
 		}
-		
-		
-		
-		
-		
-		
-		/*
-		for (int outer = 1; outer < arr.length; outer++) {
-			int inner = outer;
-			boolean sectionSorted = false;
-			while (inner > 0 && arr[inner].compareTo(arr[inner - 1]) < 0) {
-				swap(arr, inner, inner - 1);
-				inner --;
-			}
-		}
-		*/
-		
-		
-		
-		/*
-		 * for (int outer = 1; outer < arr.length; outer++) {
-			int inner = outer;
-			while (inner > 0 && arr[inner].compareTo(arr[inner - 1]) > 0) {
-				swap(arr, inner, inner - 1);
-				maxIndex = inner;
-			}
-			/*
-			boolean sorted = false;
-			
-			int newInt = arr[outer];		
-			
-			int inner = 0;
-			while (!sorted) {
-				
-			}
-			* 
-		}
-		*/
 	}
 	
 	/**
@@ -107,31 +69,33 @@ public class SortMethods {
 	public void mergeSort(Integer [] arr) {
 		temp = new Integer[arr.length];
 		mergeSort(arr, 0, arr.length - 1);
-		for (int i = 0; i < temp.length; i++) {
-			arr[i] = temp[i];
-		}
 	}
 	/** Helper recursive method */
 	private void mergeSort(Integer[] arr, int start, int end) {
-		if (start != end) { //if small array is 1 in length
+		if (start != end) { //if small array not 1 in length
 			mergeSort(arr, start, (start + end + 1) / 2 - 1);
 			mergeSort(arr, (start + end + 1) / 2, end);
 			
 			int counter = start; //number of elements stored
-			int pr = (start + end + 1) / 2 + 1; //right pointer
-			for (int pl = 0; pl < (start + end + 1) / 2; pl++) { //left pointer
+			int pr = (start + end + 1) / 2; //right pointer
+			for (int pl = start; pl < (start + end + 1) / 2; pl++) { //left pointer
 				while (pr <= end && arr[pr] < arr[pl]) {
 					temp[counter] = arr[pr];
+					++counter;
 					pr++;
 				}
+				temp[counter] = arr[pl];
+				++counter;
 			}
 			while (pr <= end) {
 				temp[counter] = arr[pr];
 				pr++;
 				counter++;
 			}
-		}
-			 
+			for (int i = start; i <= end; ++i) {
+				arr[i] = temp[i];
+			}
+		}		 
 	}
 	
 	/*****************************************************************/
@@ -182,7 +146,7 @@ public class SortMethods {
 		printArray(arr);
 		System.out.println();
 
-/*		
+		
 		for (int a = 0; a < 10; a++)
 			arr[a] = (int)(Math.random() * 100) + 1;
 		System.out.println("\nInsertion Sort");
@@ -193,7 +157,7 @@ public class SortMethods {
 		System.out.println("Array after sort:");
 		printArray(arr);
 		System.out.println();
-*/
+
 		
 		for (int a = 0; a < 10; a++)
 			arr[a] = (int)(Math.random() * 100) + 1;
