@@ -3,8 +3,8 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Comparator;
 /**
- *	Population - <description goes here>
- *
+ *	Population - Sorts the information of cities in the US based on their name,
+ *	population, or state.
  *	Requires FileUtils and Prompt classes.
  *
  *	@author	Michael Yeung
