@@ -21,9 +21,12 @@ public class Population { //implements Comparator<City> {
 	
 	private List<City> temp; //temporary array for merge sort
 
+	private CompareByName cbn;
+	
 	/** Constructor */
 	public Population() {
 		cities = new ArrayList<City>();
+		cbn = new CompareByName();
 	}
 
 	/**
@@ -39,20 +42,49 @@ public class Population { //implements Comparator<City> {
 			}
 			swap(cities, maxIndex, outer);
 		}
-		//for (City result : cities) System.out.println(result.getPopulation());
+		//for (City result : cities) System.out.println(result.getCityName() 
+		//+" " +result.getState() +" "+result.getCityType() + " " + result.getPopulation());
+		
 	}
 
 	/**
 	 * Uses merge sort to sort cities in descending population order
 	 */
 	public void sortDescendPop() {
-		//System.out.println(cities.size());
-		temp = cities; //new ArrayList<City>(cities.size());
-		mergeSort(cities, 0, cities.size() - 1);
-		//System.out.println(cities.size());
-		for (City result : cities) System.out.println(", Population " + result.getPopulation());
+		temp = new ArrayList<City>(cities);
+		sortDescendPop(cities, 0, cities.size() - 1);
+		//for (City result : cities) System.out.println(result.getState() 
+		//+" " +result.getCityName() +" "+result.getCityType() + " " + result.getPopulation());
 	}
 
+	/** Helper recursive method for sorting in descend population order*/
+	private void sortDescendPop(List<City> arr, int start, int end) {
+		if (start != end) { //if small array not 1 in length
+			sortDescendPop(arr, start, (start + end + 1) / 2 - 1);
+			sortDescendPop(arr, (start + end + 1) / 2, end);
+			
+			int counter = start; //number of elements stored
+			int pr = (start + end + 1) / 2; //right pointer
+			for (int pl = start; pl < (start + end + 1) / 2; pl++) { //left pointer
+				while (pr <= end && arr.get(pr).compareTo(arr.get(pl)) > 0) {
+					temp.set(counter, arr.get(pr));
+					counter++;
+					pr++;
+				}
+				temp.set(counter, arr.get(pl));
+				counter++;
+			}
+			while (pr <= end) {
+				temp.set(counter, arr.get(pr));
+				pr++;
+				counter++;
+			}
+			for (int i = start; i <= end; i++) {
+				arr.set(i, temp.get(i));
+			}
+		}		 
+	}
+	
 	/**
 	 * Uses insertion sort to sort cities in ascending name order
 	 */
@@ -65,44 +97,36 @@ public class Population { //implements Comparator<City> {
 				inner--;
 			}
 		}
-		//for (City result : cities) System.out.println(result.getCityName());
+		//for (City result : cities) System.out.println(result.getCityName() 
+		//+" " +result.getState() +" "+result.getCityType() + " " + result.getPopulation());
 	}
 
+	
 	/**
 	 * Uses merge sort to sort cities in descending name order
 	 */
 	public void sortDescendName() {
-		
+		temp = new ArrayList<City>(cities);
+		sortDescendName(cities, 0, cities.size() - 1);
+		//for (City result : cities) System.out.println(result.getCityName() 
+		//+" " +result.getState() +" "+result.getCityType() + " " + result.getPopulation());
 	}
 
-	public void mergeSort(List<City> arr) {
-		temp = new ArrayList<City>();
-		for (int i = 0; i < 10; i++)
-			temp.add(null);
-		mergeSort(arr, 0, arr.size() - 1);
-	}
-	
-	/** Helper recursive method */
-	private void mergeSort(List<City> arr, int start, int end) {
+	/** Helper recursive method for sorting in descend name order*/
+	private void sortDescendName(List<City> arr, int start, int end) {
 		if (start != end) { //if small array not 1 in length
-			mergeSort(arr, start, (start + end + 1) / 2 - 1);
-			mergeSort(arr, (start + end + 1) / 2, end);
+			sortDescendName(arr, start, (start + end + 1) / 2 - 1);
+			sortDescendName(arr, (start + end + 1) / 2, end);
 			
 			int counter = start; //number of elements stored
 			int pr = (start + end + 1) / 2; //right pointer
 			for (int pl = start; pl < (start + end + 1) / 2; pl++) { //left pointer
-				while (pr <= end && arr.get(pr).compareTo(arr.get(pl)) < 0) {
-					temp.set(
-						counter,
-						arr.get(pr)
-					);
+				while (pr <= end && cbn.compare(arr.get(pr), arr.get(pl)) > 0) {
+					temp.set(counter, arr.get(pr));
 					counter++;
 					pr++;
 				}
-				temp.set(
-						counter,
-						arr.get(pl)
-					);
+				temp.set(counter, arr.get(pl));
 				counter++;
 			}
 			while (pr <= end) {
@@ -116,53 +140,17 @@ public class Population { //implements Comparator<City> {
 		}		 
 	}
 
-	/** Helper recursive method to sortDescendPop() */
-	// private void mergeSort(List<City> arr, int start, int end) {
-	// 	//System.out.println("in recursive mergesort");
-	// 	if (start != end) { //if small array not 1 in length
-	// 		mergeSort(arr, start, (start + end + 1) / 2 - 1);
-	// 		mergeSort(arr, (start + end + 1) / 2, end);
-			
-	// 		int counter = start; //number of elements stored
-	// 		int pr = (start + end + 1) / 2; //right pointer
-	// 		for (int pl = start; pl < (start + end + 1) / 2; pl++) { //left pointer
-	// 			while (pr <= end && arr.get(pr).compareTo(arr.get(pl)) < 0) {
-	// 				temp.set(
-	// 					counter,
-	// 					arr.get(pr)
-	// 				);
-	// 				System.out.println(arr.get(pr) +"  "+ arr.get(pl));
-	// 				//temp.set(counter, arr.get(pr));
-	// 				counter++;
-	// 				pr++;
-	// 			}
-	// 			temp.set(counter, arr.get(pl));
-	// 			counter++;
-	// 		}
-	// 		while (pr <= end) {
-	// 			temp.set(counter, arr.get(pr));
-	// 			pr++;
-	// 			counter++;
-	// 		}
-	// 		for (int i = start; i <= end; i++) {
-	// 			arr.set(i, temp.get(i));
-	// 		}
-	// 	}		 
-	// }
-
 	/**
 	*	Swaps two Integer objects in array arr
 	*	@param arr		array of Integer objects
 	*	@param x		index of first object to swap
 	*	@param y		index of second object to swap
 	*/
-   private void swap(List<City> arr, int x, int y) {
+    private void swap(List<City> arr, int x, int y) {
 	   City tempCit = arr.get(x);
 	   arr.set(x, arr.get(y)); // = arr.get(y);
 	   arr.set(y, tempCit); // = tempCit;
    }
-
-
 
 
 	/**
@@ -214,14 +202,42 @@ public class Population { //implements Comparator<City> {
 	public void run() {
 		storePopulationData();
 
-		//sortAscendPop();
+		long startMillisec1 = System.currentTimeMillis();
+		sortAscendPop();
+		long endMillisec1 = System.currentTimeMillis();
+		long startMillisec2 = System.currentTimeMillis();
 		sortDescendPop();
-		//sortAscendName();
+		long endMillisec2 = System.currentTimeMillis();
+		long startMillisec3 = System.currentTimeMillis();
+		sortAscendName();
+		long endMillisec3 = System.currentTimeMillis();
+		
+		long startMillisec3a = System.currentTimeMillis();
+		sortAscendName();
+		long endMillisec3a = System.currentTimeMillis();
+		
+		long startMillisec4 = System.currentTimeMillis();
+		sortDescendName();
+		long endMillisec4 = System.currentTimeMillis();
+		System.out.println(startMillisec1 - endMillisec1); //select
+		System.out.println(startMillisec2 - endMillisec2); //merge
+		System.out.println(startMillisec3 - endMillisec3); //insert
+		
+		System.out.println(startMillisec3a - endMillisec3a); //insert special
+		
+		System.out.println(startMillisec4 - endMillisec4); //merge
 	}
 
 	/** Main method */
 	public static void main(String[] args) {
 		Population pop = new Population();
 		pop.run();
+	}
+}
+class CompareByName implements Comparator<City> {
+	public int compare(City cit1, City cit2) {
+		if (!cit1.getCityName().equals(cit2.getCityName())) return cit1.getCityName().compareTo(cit2.getCityName());
+		else if (cit1.getPopulation() != cit2.getPopulation()) return cit1.getPopulation() - cit2.getPopulation();
+		else return cit1.getState().compareTo(cit2.getState());
 	}
 }
