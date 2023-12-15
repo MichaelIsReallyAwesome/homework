@@ -21,30 +21,45 @@ public class Population { //implements Comparator<City> {
 	
 	private List<City> temp; //temporary array for merge sort
 
+	private CompareByPop cbp;
 	private CompareByName cbn;
-	
+	private CompareByState cbs;
+
+	private int numCities; //number of city data points
+	private long startMillisec;
+	private long endMillisec; 
 	/** Constructor */
 	public Population() {
 		cities = new ArrayList<City>();
+		cbp = new CompareByPop();
 		cbn = new CompareByName();
+		cbs = new CompareByState();
 	}
 
 	/**
 	 * Uses selection sort to sort cities in ascending population order
 	 */
 	public void sortAscendPop() {
+		//sort array + record timestamps
+		startMillisec = System.currentTimeMillis();
 		for (int outer = cities.size() - 1; outer > 0; outer--) {
 			int maxIndex = 0;
 			for (int inner = 0; inner <= outer; inner++) {
-				if (cities.get(inner).getPopulation() > cities.get(maxIndex).getPopulation())  {
+				if (cbp.compare(cities.get(inner), cities.get(maxIndex)) > 0)  {
 					maxIndex = inner;
 				}
 			}
 			swap(cities, maxIndex, outer);
 		}
-		//for (City result : cities) System.out.println(result.getCityName() 
-		//+" " +result.getState() +" "+result.getCityType() + " " + result.getPopulation());
-		
+		endMillisec = System.currentTimeMillis();
+
+		//print out sorted array
+		System.out.println("\nFifty least populous cities");
+		System.out.printf("      %-23s%-23s%-12s %12s\n", "State", 
+				"City", "Type", "Population");
+		for (int i = 0; i < 50; i++) {
+			System.out.printf("%4d: %s\n", i + 1, cities.get(i).toString());
+		}
 	}
 
 	/**
@@ -52,9 +67,19 @@ public class Population { //implements Comparator<City> {
 	 */
 	public void sortDescendPop() {
 		temp = new ArrayList<City>(cities);
+
+		//call recursive method to sort array + record timestamps
+		startMillisec = System.currentTimeMillis();
 		sortDescendPop(cities, 0, cities.size() - 1);
-		//for (City result : cities) System.out.println(result.getState() 
-		//+" " +result.getCityName() +" "+result.getCityType() + " " + result.getPopulation());
+		endMillisec = System.currentTimeMillis();
+
+		//print out sorted array
+		System.out.println("\nFifty most populous cities");
+		System.out.printf("      %-23s%-23s%-12s %12s\n", "State", 
+				"City", "Type", "Population");
+		for (int i = 0; i < 50; i++) {
+			System.out.printf("%4d: %s\n", i + 1, cities.get(i).toString());
+		}
 	}
 
 	/** Helper recursive method for sorting in descend population order*/
@@ -89,27 +114,44 @@ public class Population { //implements Comparator<City> {
 	 * Uses insertion sort to sort cities in ascending name order
 	 */
 	public void sortAscendName() {
+		//sort array + record timestamps
+		startMillisec = System.currentTimeMillis();
 		for (int outer = 1; outer < cities.size(); outer++) {
 			int inner = outer;
-			while (inner > 0 && cities.get(inner).getCityName()
-					.compareTo(cities.get(inner - 1).getCityName()) < 0) {
+			while (inner > 0 && cbn.compare(cities.get(inner), cities.get(inner - 1)) < 0) {
 				swap(cities, inner, inner - 1);
-				inner--;
+				inner--; 
 			}
 		}
-		//for (City result : cities) System.out.println(result.getCityName() 
-		//+" " +result.getState() +" "+result.getCityType() + " " + result.getPopulation());
+		endMillisec = System.currentTimeMillis();
+
+		//print out sorted array
+		System.out.println("\nFifty cities sorted by name");
+		System.out.printf("      %-23s%-23s%-12s %12s\n", "State", 
+				"City", "Type", "Population");
+		for (int i = 0; i < 50; i++) {
+			System.out.printf("%4d: %s\n", i + 1, cities.get(i).toString());
+		}
 	}
 
-	
 	/**
 	 * Uses merge sort to sort cities in descending name order
 	 */
 	public void sortDescendName() {
 		temp = new ArrayList<City>(cities);
+
+		//sort array + record timestamps
+		startMillisec = System.currentTimeMillis();
 		sortDescendName(cities, 0, cities.size() - 1);
-		//for (City result : cities) System.out.println(result.getCityName() 
-		//+" " +result.getState() +" "+result.getCityType() + " " + result.getPopulation());
+		endMillisec = System.currentTimeMillis();
+
+		//print out sorted array
+		System.out.println("\nFifty cities sorted by name descending");
+		System.out.printf("      %-23s%-23s%-12s %12s\n", "State", 
+				"City", "Type", "Population");
+		for (int i = 0; i < 50; i++) {
+			System.out.printf("%4d: %s\n", i + 1, cities.get(i).toString());
+		}
 	}
 
 	/** Helper recursive method for sorting in descend name order*/
@@ -140,6 +182,107 @@ public class Population { //implements Comparator<City> {
 		}		 
 	}
 
+	/**  Uses insertion sort to find the most populous cities in a chosen state */
+	public void mostPopInState() {
+		//sort array + record timestamps
+		startMillisec = System.currentTimeMillis();
+		for (int outer = 1; outer < cities.size(); outer++) {
+			int inner = outer;
+			while (inner > 0 && cbs.compare(cities.get(inner), cities.get(inner - 1)) > 0) {
+				swap(cities, inner, inner - 1);
+				inner--; 
+			}
+		}
+		endMillisec = System.currentTimeMillis();
+		System.out.println();
+
+		//loop verifying state name exists
+		boolean stateValid = false;
+		int loopCount = 0;
+		String state = "";
+		do {
+			loopCount = 0;
+
+			//ask for state name
+			state = Prompt.getString("Enter state name (ie. Alabama)");
+
+			//check to see if state name valid
+			while (loopCount < cities.size() && !stateValid) {
+				if (cities.get(loopCount).getState().equals(state)) stateValid = true;
+				else loopCount++;
+			}
+			if (!stateValid) System.out.println("ERROR: " + state + " is not valid");
+		} while (!stateValid);
+
+		//prints out top 50 elements of sorted array
+		int limFifty = 0;
+		System.out.println("\nFifty most populous cities in " + state);
+		System.out.printf("      %-23s%-23s%-12s %12s\n", "State", 
+				"City", "Type", "Population");
+		while (limFifty < 50 && loopCount + limFifty < cities.size() && 
+				cities.get(loopCount + limFifty).getState().equals(state)) {
+			System.out.printf("%4d: %s\n", limFifty + 1, cities.get(loopCount + limFifty).toString());
+			limFifty++;
+		}
+		System.out.println();
+		
+		// //print out sorted array
+		// System.out.println("\nFifty cities sorted by name descending");
+		// System.out.printf("      %-25s%-24s%-16s%12s\n", "State", 
+		// 		"City", "Type", "Population");
+		// for (int i = 0; i < 50; i++) {
+		// 	// City current = cities.get(i);
+		// 	// System.out.printf("%,4d: %-25s%-24s%-16s%,12d\n", i+1, current.getState(),
+		// 	// 		 current.getCityName(), current.getCityType(), current.getPopulation());
+		// 	System.out.printf("%4d: %s\n", i + 1, cities.get(i).toString());
+		// }
+	}
+	/** 
+	 * Uses insertion sort to find all the cities with a certain name sorted by population
+	 **/
+	public void sameCityName() {
+		//sort array + record timestamps
+		startMillisec = System.currentTimeMillis();
+		for (int outer = 1; outer < cities.size(); outer++) {
+			int inner = outer;
+			while (inner > 0 && cbn.compare(cities.get(inner), cities.get(inner - 1)) < 0) {
+				swap(cities, inner, inner - 1);
+				inner--; 
+			}
+		}
+		endMillisec = System.currentTimeMillis();
+		System.out.println();
+
+		//loop verifying city name exists
+		boolean citValid = false;
+		int loopCount = 0;
+		String city = "";
+		do {
+			loopCount = 0;
+
+			//ask for city name
+			city = Prompt.getString("Enter city name");
+
+			//check to see if state name valid
+			while (loopCount < cities.size() && !citValid) {
+				if (cities.get(loopCount).getCityName().equals(city)) citValid = true;
+				else loopCount++;
+			}
+			if (!citValid) System.out.println("ERROR: " + city + " is not valid");
+		} while (!citValid);
+
+		//prints out all the cities with the given name
+		int limFifty = 0;
+		System.out.println("\nCity " + city + " by population");
+		System.out.printf("      %-23s%-23s%-12s %12s\n", "State", 
+				"City", "Type", "Population");
+		while (loopCount + limFifty < cities.size() && 
+				cities.get(loopCount + limFifty).getCityName().equals(city)) {
+			System.out.printf("%4d: %s\n", limFifty + 1, cities.get(loopCount + limFifty).toString());
+			limFifty++;
+		}
+		System.out.println();
+	}
 	/**
 	*	Swaps two Integer objects in array arr
 	*	@param arr		array of Integer objects
@@ -158,7 +301,7 @@ public class Population { //implements Comparator<City> {
 	 * information as a City object in an ArrayList
 	 */
 	public void storePopulationData() {
-		int numCities = 0;
+		numCities = 0;
 		String state = "";
 		String citName = "";
 		String citType = "";			
@@ -200,32 +343,74 @@ public class Population { //implements Comparator<City> {
 
 	/** Runs the program */
 	public void run() {
+		int typeSort = 0;
+		
+		//make array with the data from the population file
 		storePopulationData();
 
-		long startMillisec1 = System.currentTimeMillis();
-		sortAscendPop();
-		long endMillisec1 = System.currentTimeMillis();
-		long startMillisec2 = System.currentTimeMillis();
-		sortDescendPop();
-		long endMillisec2 = System.currentTimeMillis();
-		long startMillisec3 = System.currentTimeMillis();
-		sortAscendName();
-		long endMillisec3 = System.currentTimeMillis();
+		//print intro
+		printIntroduction();
+		System.out.println(numCities + " cities in database\n");
+
+		//loop that prints out prompt
+		while (typeSort != 9) {
+			//print prompt and store response
+			printMenu();
+			typeSort = Prompt.getInt("Enter selection");
+
+			//call method which sorts/prints
+			if (typeSort == 1) {
+				sortAscendPop();
+			}
+			else if (typeSort == 2) {
+				sortDescendPop();
+			}
+			else if (typeSort == 3) {
+				sortAscendName();
+			}
+			else if (typeSort == 4) {
+				sortDescendName();
+			}
+			else if (typeSort == 5) {
+				mostPopInState();
+			}
+			else if (typeSort == 6) {
+				sameCityName();
+			}
+			//record time at end
+			if (typeSort >= 1 && typeSort <= 4) System.out.println("\nEllapsed Time " 
+					+ (endMillisec - startMillisec) + " milliseconds\n");
+		}
+
+		//print thank you message
+		System.out.println("\nThank you for using Population!");
+
+		// long startMillisec1 = System.currentTimeMillis();
+		// sortAscendPop();
+		// long endMillisec1 = System.currentTimeMillis();
+		// long startMillisec2 = System.currentTimeMillis();
+		// sortDescendPop();
+		// long endMillisec2 = System.currentTimeMillis();
+		// long startMillisec3 = System.currentTimeMillis();
+		// sortAscendName();
+		// long endMillisec3 = System.currentTimeMillis();
 		
-		long startMillisec3a = System.currentTimeMillis();
-		sortAscendName();
-		long endMillisec3a = System.currentTimeMillis();
+		// long startMillisec3a = System.currentTimeMillis();
+		// sortAscendName();
+		// long endMillisec3a = System.currentTimeMillis();
 		
-		long startMillisec4 = System.currentTimeMillis();
-		sortDescendName();
-		long endMillisec4 = System.currentTimeMillis();
-		System.out.println(startMillisec1 - endMillisec1); //select
-		System.out.println(startMillisec2 - endMillisec2); //merge
-		System.out.println(startMillisec3 - endMillisec3); //insert
+		// long startMillisec4 = System.currentTimeMillis();
+		// sortDescendName();
+		// long endMillisec4 = System.currentTimeMillis();
+		// System.out.println(startMillisec1 - endMillisec1); //select
+		// System.out.println(startMillisec2 - endMillisec2); //merge
+		// System.out.println(startMillisec3 - endMillisec3); //insert
 		
-		System.out.println(startMillisec3a - endMillisec3a); //insert special
+		// System.out.println(startMillisec3a - endMillisec3a); //insert special
 		
-		System.out.println(startMillisec4 - endMillisec4); //merge
+		// System.out.println(startMillisec4 - endMillisec4); //merge
+		// mostPopInState();
+		//sameCityName();
 	}
 
 	/** Main method */
@@ -234,10 +419,30 @@ public class Population { //implements Comparator<City> {
 		pop.run();
 	}
 }
+/** Comparator class that compares the population first */
+class CompareByPop implements Comparator<City> {
+	public int compare(City cit1, City cit2) {
+		if (cit1.getPopulation() != cit2.getPopulation()) return cit1.getPopulation() - cit2.getPopulation();
+		else if (!cit1.getState().equals(cit2.getState())) return cit1.getState().compareTo(cit2.getState());
+		else if (!cit1.getCityName().equals(cit2.getCityName())) return cit1.getCityName().compareTo(cit2.getCityName());
+		else return cit1.getCityType().compareTo(cit2.getCityType());
+	}
+}
+/** Comparator class that compares the city name first */
 class CompareByName implements Comparator<City> {
 	public int compare(City cit1, City cit2) {
 		if (!cit1.getCityName().equals(cit2.getCityName())) return cit1.getCityName().compareTo(cit2.getCityName());
+		else if (cit1.getPopulation() != cit2.getPopulation()) return cit2.getPopulation() - cit1.getPopulation();
+		else if (!cit1.getState().equals(cit2.getState())) return cit1.getState().compareTo(cit2.getState());
+		else return cit1.getCityType().compareTo(cit2.getCityType()); 
+	}
+}
+/** Comparator class that compares the state first */
+class CompareByState implements Comparator<City> {
+	public int compare(City cit1, City cit2) {
+		if (!cit1.getState().equals(cit2.getState())) return cit2.getState().compareTo(cit1.getState()); 
 		else if (cit1.getPopulation() != cit2.getPopulation()) return cit1.getPopulation() - cit2.getPopulation();
-		else return cit1.getState().compareTo(cit2.getState());
+		else if (!cit1.getCityName().equals(cit2.getCityName())) return cit1.getCityName().compareTo(cit2.getCityName());
+		else return cit1.getCityType().compareTo(cit2.getCityType()); 
 	}
 }
